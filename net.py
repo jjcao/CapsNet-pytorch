@@ -25,7 +25,7 @@ class AgreementRouting(nn.Module):
     def forward(self, u_predict):
         batch_size, input_caps, output_caps, output_dim = u_predict.size()
 
-        c = F.softmax(self.b, dim=0) # b.shape [1152, 10]; c.shape [1152, 10]
+        c = F.softmax(self.b, dim=1) # b.shape [1152, 10]; c.shape [1152, 10]
         s = (c.unsqueeze(2) * u_predict).sum(dim=1) # c.unsqueeze(2).shape [1152, 10, 1]; u_predict.shape [128, 1152, 10, 16]; (c.unsqueeze(2) * u_predict).shape [128, 1152, 10, 16]
         v = squash(s)
 
@@ -35,7 +35,7 @@ class AgreementRouting(nn.Module):
                 v = v.unsqueeze(1)
                 b_batch = b_batch + (u_predict * v).sum(-1)
 
-                c = F.softmax(b_batch.view(-1, output_caps), dim = 0).view(-1, input_caps, output_caps, 1) # F.softmax([147456, 10])
+                c = F.softmax(b_batch.view(-1, output_caps), dim = 1).view(-1, input_caps, output_caps, 1) # F.softmax([147456, 10])
                 s = (c * u_predict).sum(dim=1)
                 v = squash(s)
 
